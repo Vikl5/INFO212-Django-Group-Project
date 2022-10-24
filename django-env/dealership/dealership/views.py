@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 
 #Following code is taken from the Lecture notes in INFO212
-#LECTURE 08: ARCHITECTURAL SOLUTIONS - Fazle  Rabbi
+#LECTURE 08: ARCHITECTURAL SOLUTIONS - Fazle  Rabbi 2022
 #https://mitt.uib.no/courses/35975/files?preview=4543975
 
 @api_view(['GET'])
@@ -45,4 +45,3 @@ def delete_car(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     theCar.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-    
