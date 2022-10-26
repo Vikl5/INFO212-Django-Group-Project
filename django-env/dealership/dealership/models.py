@@ -19,3 +19,11 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.name + '' + self.age + '' + self.address
+
+class Employee(models.Model):
+    name = models.CharField(max_length = 200)
+    address = models.CharField(max_length = 200)
+    branch = models.CharField(max_length = 200)
+
+    def __str__(self):
+        return self.name + '' + self.address + '' + self.branch
