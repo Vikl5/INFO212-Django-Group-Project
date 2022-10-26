@@ -1,6 +1,6 @@
-from .models import Car
+from .models import Car, Customer
 from rest_framework.response import Response
-from .serializers import CarSerializer
+from .serializers import CarSerializer, CustomerSerializer
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -23,7 +23,6 @@ def save_car(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
 @api_view(['PUT'])
 def update_car(request, id):
     try:
@@ -44,4 +43,43 @@ def delete_car(request, id):
     except Car.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     theCar.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+#############################################################
+#Customers
+
+@api_view(['GET'])
+def get_customers(request):
+    customer = Customer.objects.all()
+    serializer = CustomerSerializer(customer, many=True)
+    print(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def save_customer(request):
+    serializer = CustomerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['PUT'])
+def update_customer(request, id):
+    try:
+        theCustomer = Customer.objects.get(pk=id)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = CustomerSerializer(theCustomer, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def delete_customer(request, id):
+    try:
+        theCustomer = Customer.objects.get(pk=id)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    theCustomer.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
