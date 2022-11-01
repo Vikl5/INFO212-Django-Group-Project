@@ -1,9 +1,11 @@
+from urllib import response
 from .models import Car, Customer, Employee
 from rest_framework.response import Response
 from .serializers import CarSerializer, CustomerSerializer, EmployeeSerializer
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
+import random
 
 #Following code is taken from the Lecture notes in INFO212
 #LECTURE 08: ARCHITECTURAL SOLUTIONS - Fazle  Rabbi 2022
@@ -125,6 +127,7 @@ def delete_employee(request, id):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 ###########################################################
+#Our own code, but still uses some of the same methods as provided in the lecture
 #Order-car
 
 @api_view(['GET'])
@@ -150,4 +153,72 @@ def order_car(request, car_id, customer_id):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-   
+@api_view(['GET'])
+def cancel_order_car(request, car_id, customer_id):
+    try:
+        theCustomer = Customer.objects.get(pk=customer_id)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        theCar = Car.objects.get(pk=car_id)
+    except Car.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    #if theCustomer.customer_booking == theCar:
+    if theCustomer.customer_booking == None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    elif theCar.status == 'booked' or theCar.status == 'rented': #and theCar == theCustomer.customer_booking:
+        theCar.status = 'available'
+        theCar.save()
+        theCustomer.customer_booking = None
+        theCustomer.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def rent_car(request, car_id, customer_id):
+    try:
+        theCustomer = Customer.objects.get(pk=customer_id)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        theCar = Car.objects.get(pk=car_id)
+    except Car.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if theCustomer.customer_booking == None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    elif theCar.status == 'booked':
+        theCar.status = 'rented'
+        theCar.save()
+        theCustomer.customer_booking = theCar
+        theCustomer.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def return_car(request, car_id, customer_id):
+    car_status = ['available', 'damaged']
+    try:
+        theCustomer = Customer.objects.get(pk=customer_id)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        theCar = Car.objects.get(pk=car_id)
+    except Car.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if theCustomer.customer_booking == None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    elif theCar.status == 'booked' or theCar.status == 'rented':
+        theCar.status = random.choice(car_status)
+        theCar.save()
+        theCustomer.customer_booking = None
+        theCustomer.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
