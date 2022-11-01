@@ -123,3 +123,40 @@ def delete_employee(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     theEmployee.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+###########################################################
+#Order-car
+
+@api_view(['POST'])
+def order_car(request, car_id, customer_id):
+    #customer_id = CustomerSerializer.fields()
+    #serializer = CustomerSerializer.fields
+    try:
+        theCustomer = Customer.objects.get(pk=customer_id)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        theCar = Car.objects.get(pk=car_id)
+    except Car.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    #if Car.objects.filter(car_id='2') == Customer.objects.filter(customer_id='2'):
+    if theCar.status == 'booked':
+        return Response(status=status.HTTP_404_NOT_FOUND)
+        # car_id.status = 'booked'
+        #print('booked')
+    else:
+        return Response(status=status.HTTP_200_OK)
+
+
+
+        
+    # for detect in Car.objects.get(pk=car_id):
+    #     if detect.title == customer_id:
+    #         car_id.status = 'booked'
+
+    # if customer_id not in serializer:
+    #     car_id.status = 'booked'
+    # else:
+    #     car_id.status = 'available'
