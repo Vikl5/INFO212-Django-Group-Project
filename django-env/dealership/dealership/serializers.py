@@ -9,7 +9,7 @@ class CarSerializer(serializers.ModelSerializer):
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['id', 'name', 'age', 'address']
+        fields = ['id', 'name', 'age', 'address', 'customer_booking']
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
