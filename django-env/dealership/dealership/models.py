@@ -16,7 +16,7 @@ class Customer(models.Model):
     name = models.CharField(max_length = 200)
     age = models.CharField(max_length = 20)
     address = models.CharField(max_length = 200)
-    customer_booking = models.OneToOneField(Car, on_delete=models.SET_NULL, null=True)
+    customer_booking = models.OneToOneField(Car, on_delete=models.SET_NULL, null=True, blank=True)
     #booked = models.CharField(max_length = 50)
 
     def __str__(self):
