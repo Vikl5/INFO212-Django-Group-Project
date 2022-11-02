@@ -189,7 +189,6 @@ def rent_car(request, car_id, customer_id):
 
 @api_view(['GET'])
 def return_car(request, car_id, customer_id, condition):
-    car_status = ['available', 'damaged']
     try:
         theCustomer = Customer.objects.get(pk=customer_id)
     except Customer.DoesNotExist:
