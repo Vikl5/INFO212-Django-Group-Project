@@ -34,5 +34,5 @@ urlpatterns = [
     path('order_car/<int:customer_id>/<int:car_id>', order_car),
     path('cancel_order_car/<int:customer_id>/<int:car_id>', cancel_order_car),
     path('rent_car/<int:customer_id>/<int:car_id>', rent_car),
-    path('return_car/<int:customer_id>/<int:car_id>', return_car),
+    path('return_car/<int:customer_id>/<int:car_id>/<str:condition>', return_car),
 ]
