@@ -136,14 +136,12 @@ def order_car(request, car_id, customer_id):
         theCustomer = Customer.objects.get(pk=customer_id)
     except Customer.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     try:
         theCar = Car.objects.get(pk=car_id)
     except Car.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    if theCar.status == 'booked':
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    if theCustomer.customer_booking != None:
+        return Response(status=status.HTTP_404_NOT_FOUND)        
     elif theCar.status == 'available':
         theCar.status = 'booked'
         theCustomer.customer_booking = theCar
@@ -159,15 +157,11 @@ def cancel_order_car(request, car_id, customer_id):
         theCustomer = Customer.objects.get(pk=customer_id)
     except Customer.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     try:
         theCar = Car.objects.get(pk=car_id)
     except Car.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    #if theCustomer.customer_booking == theCar:
-    if theCustomer.customer_booking == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    elif theCar.status == 'booked' or theCar.status == 'rented': #and theCar == theCustomer.customer_booking:
+        return Response(status=status.HTTP_404_NOT_FOUND) 
+    if theCustomer.customer_booking == theCar:
         theCar.status = 'available'
         theCar.save()
         theCustomer.customer_booking = None
@@ -182,40 +176,32 @@ def rent_car(request, car_id, customer_id):
         theCustomer = Customer.objects.get(pk=customer_id)
     except Customer.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     try:
         theCar = Car.objects.get(pk=car_id)
     except Car.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    if theCustomer.customer_booking == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    elif theCar.status == 'booked':
+    if theCustomer.customer_booking == theCar:
         theCar.status = 'rented'
         theCar.save()
-        theCustomer.customer_booking = theCar
-        theCustomer.save()
         return Response(status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
-def return_car(request, car_id, customer_id):
-    car_status = ['available', 'damaged']
+def return_car(request, car_id, customer_id, condition):
     try:
         theCustomer = Customer.objects.get(pk=customer_id)
     except Customer.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     try:
         theCar = Car.objects.get(pk=car_id)
     except Car.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    if theCustomer.customer_booking == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    elif theCar.status == 'booked' or theCar.status == 'rented':
-        theCar.status = random.choice(car_status)
+    if theCustomer.customer_booking == theCar and theCar.status == 'rented':
+        if condition == 'ok':
+            theCar.status = 'available'
+        elif condition == 'damaged':
+            theCar.status = 'damaged'
         theCar.save()
         theCustomer.customer_booking = None
         theCustomer.save()
